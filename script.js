@@ -26,10 +26,27 @@ if (navigator.geolocation) {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            L.marker(coords).addTo(map)
-                .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-                .openPopup();
+
+            map.on('click', function (mapEvent) {
+                console.log(mapEvent);
+
+                /* Получение широты и долготы маркера */
+                const { lat, lng } = mapEvent.latlng;
+
+                /* Установка настроек маркера */
+                L.marker([lat, lng])
+                    .addTo(map)
+                    .bindPopup(L.popup({
+                        autoClose: false,
+                        closeOnClick: false,
+                        className: 'running-popup'
+                    }))
+                    .setPopupContent('Тренировка')
+                    .openPopup();
+            });
         },
+
+        /* Ошибка при неуспешной загрузки карты */
         function () {
             alert('Невозможно получить вашe местоположение');
         }
