@@ -9,12 +9,53 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputTemp = document.querySelector('.form__input--temp');
 const inputClimb = document.querySelector('.form__input--climb');
 
+class Workout {
+    date = new Date();
+    id = (Date.now() + '').slice(-10);
+
+    constructor(coords, distance, duration) {
+        this.coords = coords;
+        this.distance = distance; // km
+        this.duration = duration; // m
+    }
+}
+
+class Running extends Workout {
+    constructor(coords, distance, duration, temp) {
+        super(coords, distance, duration);
+        this.temp = temp;
+        this.calculatePace();
+    }
+    calculatePace() {
+        // min/km
+        this.pace = this.duration / this.distance;
+    }
+}
+
+class Cycling extends Workout {
+    constructor(coords, distance, duration, climb) {
+        super(coords, distance, duration);
+        this.climb = climb;
+        this.calculateSpeed();
+    }
+    calculateSpeed() {
+        // km/h
+        this.speed = this.distance / (this.duration / 60);
+    }
+}
+
+//const running = new Running([50, 39], 7, 40, 170);
+//const cycling = new Cycling([50, 39], 37, 80, 370);
+//console.log(running);
+//console.log(cycling);
 
 class App {
-    #map;
-    #mapEvent;
+    /* #map;
+    #mapEvent; */
 
-    constructor() {
+    constructor(map, mapEvent) {
+        this._map = map;
+        this._mapEvent = mapEvent;
         this._getPosition();
         form.addEventListener('submit', this._newWorkout.bind(this));
         inputType.addEventListener('change', this._toggleClimbField);
@@ -48,7 +89,7 @@ class App {
         this.map.on('click', this._showForm.bind(this));
     }
     _showForm(e) {
-        this.#mapEvent = e;
+        this._mapEvent = e;
         form.classList.remove('hidden');
         inputDistance.focus();
     }
@@ -63,7 +104,7 @@ class App {
         // Очистка полей ввода данных
         inputDistance.value = inputDuration.value = inputTemp.value = inputClimb.value = '';
         // Получение широты и долготы маркера 
-        const { lat, lng } = this.#mapEvent.latlng;
+        const { lat, lng } = this._mapEvent.latlng;
 
         // Установка настроек маркера 
         L.marker([lat, lng])
@@ -80,5 +121,4 @@ class App {
 
 const app = new App();
 
-console.log();
 
